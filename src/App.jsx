@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addTask} from './action-creater/Index'; 
+import { addTask } from './action-creater/Index';
 
 function App() {
   const tasksList = useSelector(state => state.tasks.tasksList);
   const dispatch = useDispatch();
   const [newTask, setNewTask] = useState('');
+  const [selectedTasks, setSelectedTasks] = useState(new Set()); // Using a Set to track selected task indices
 
   const handleInputChange = (event) => {
     setNewTask(event.target.value);
@@ -18,7 +19,17 @@ function App() {
     }
   };
 
-  
+  const toggleTaskSelection = (index) => {
+    const updatedSelectedTasks = new Set(selectedTasks);
+
+    if (updatedSelectedTasks.has(index)) {
+      updatedSelectedTasks.delete(index);
+    } else {
+      updatedSelectedTasks.add(index);
+    }
+
+    setSelectedTasks(updatedSelectedTasks);
+  };
 
   return (
     <>
@@ -36,6 +47,10 @@ function App() {
           {tasksList.map((task, index) => (
             <li
               key={index}
+              onClick={() => toggleTaskSelection(index)}
+              style={{
+                textDecoration: selectedTasks.has(index) ? 'line-through' : 'none'
+              }}
             >
               {task}
             </li>
